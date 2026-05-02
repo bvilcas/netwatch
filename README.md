@@ -2,47 +2,47 @@
 
 [![Demo](https://asciinema.org/a/tZuVPcPt7KkD7cZo.svg)](https://asciinema.org/a/tZuVPcPt7KkD7cZo)
 
-Python-based network listeners for capturing, logging, and analyzing incoming traffic. Built during the **DoD Cybersecurity Workforce Development Program** at Virginia Tech's Senior Military College Cyber Institute (SMCCI).
+Python network listeners for capturing, logging, and analyzing incoming traffic. Built during the **DoD Cybersecurity Workforce Development Program** at Virginia Tech's Senior Military College Cyber Institute (SMCCI).
 
 ## Overview
 
-NetWatch is a defensive monitoring toolkit that deploys listeners across multiple protocols to capture and log attack traffic to PostgreSQL for analysis. It was built on the Virginia Cyber Range during the DoD Cybersecurity Fellowship — running offensive tools (Metasploit, Nmap, arpspoof) against the listeners, then verifying what was captured by cross-referencing against Wireshark and tcpdump packet captures. Attack patterns studied include port scanning, ARP spoofing, MITM attacks, DNS enumeration, and exploit delivery.
+NetWatch is a defensive monitoring toolkit that deploys listeners across multiple protocols to capture and log attack traffic to PostgreSQL. It was built on the Virginia Cyber Range during the DoD Cybersecurity Fellowship: running offensive tools (Metasploit, Nmap, arpspoof) against the listeners, then verifying what was captured by cross-checking against Wireshark and tcpdump packet captures. Attack patterns studied include port scanning, ARP spoofing, MITM attacks, DNS enumeration, and exploit delivery.
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────┐
-│              Attacker Machine                │
+│              Attacker Machine               |
 │  (Nmap, Metasploit, hping3, arpspoof)       │
 └─────────────┬───────────────────────────────┘
               │  attack traffic
               ▼
 ┌─────────────────────────────────────────────┐
-│            NetWatch Listeners                │
+│            NetWatch Listeners               |
 │                                             │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐    │
-│  │  HTTP    │ │   TCP    │ │   UDP    │    │
-│  │ (Flask)  │ │ (socket) │ │ (socket) │    │
-│  │ :8080   │ │ :9001   │ │ :9002   │    │
-│  └────┬─────┘ └────┬─────┘ └────┬─────┘    │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐     |
+│  │  HTTP    │ │   TCP    │ │   UDP    │     │
+│  │ (Flask)  │ │ (socket) │ │ (socket) │     │
+│  │ :8080    │ │  :9001   │ │  :9002   │     │
+│  └────┬─────┘ └────┬─────┘ └────┬─────┘     │
 │       │            │            │           │
-│  ┌────┴─────┐ ┌────┴─────┐                 │
-│  │   DNS    │ │   ARP    │                 │
-│  │ (socket) │ │ (poll)   │                 │
-│  │ :53     │ │ /proc    │                 │
-│  └────┬─────┘ └────┬─────┘                 │
+│  ┌────┴─────┐ ┌────┴─────┐                  │
+│  │   DNS    │ │   ARP    │                  │
+│  │ (socket) │ │ (poll)   │                  │
+│  │ :53      │ │ /proc    │                  │
+│  └────┬─────┘ └────┬─────┘                  │
 │       │            │                        │
 │       ▼            ▼                        │
 │  ┌─────────────────────────────────────┐    │
 │  │        PostgreSQL Database          │    │
-│  │  http_logs │ tcp_logs │ udp_logs   │    │
-│  │  dns_logs  │ arp_logs              │    │
+│  │  http_logs │ tcp_logs │ udp_logs    │    │
+│  │  dns_logs  │ arp_logs               │    │
 │  └─────────────────────────────────────┘    │
 └─────────────────────────────────────────────┘
               │
               ▼  analysis
 ┌─────────────────────────────────────────────┐
-│     tcpdump / Wireshark / SQL queries        │
+│     tcpdump / Wireshark / SQL queries       │
 └─────────────────────────────────────────────┘
 ```
 
@@ -176,16 +176,16 @@ psql -h localhost -U netwatch -d netwatch -c "\copy (SELECT * FROM arp_logs WHER
 
 ## Why Not Just Use Wireshark?
 
-Wireshark shows everything raw in real time — you're just watching. The moment you close it, the data is gone.
+Wireshark displays everything raw: you're just watching. The moment you close it, the data is gone.
 
-NetWatch captures specific attack traffic, parses what matters, and stores it permanently in PostgreSQL. A week later you can still query which IPs scanned you, what paths they probed, and whether any MAC addresses changed on the network.
+NetWatch captures specific attack traffic, parses what matters, and stores in PostgreSQL. A week later you can still query which IPs scanned you, what paths they probed, and whether any MAC addresses changed on the network.
 
 ## Tech Stack
 
-- **Python 3** — Flask, socket, threading, struct
-- **PostgreSQL** — psycopg2 for connection pooling and structured logging
-- **Linux** — /proc/net/arp for ARP table monitoring
-- **Analysis** — tcpdump, Wireshark, SQL
+- **Python 3**: Flask, socket, threading, struct
+- **PostgreSQL**: psycopg2 for connection pooling and structured logging
+- **Linux**: /proc/net/arp for ARP table monitoring
+- **Analysis**: tcpdump, Wireshark, SQL
 
 ## Lab Documentation
 
@@ -198,9 +198,9 @@ See [`docs/lab_notes.md`](docs/lab_notes.md) for sanitized analysis notes coveri
 
 ## Fellowship Context
 
-Built as part of the DoD Cybersecurity Workforce Development Program at Virginia Tech's Senior Military College Cyber Institute. Labs ran on the Virginia Cyber Range — a sandboxed cloud environment used by Virginia universities for cybersecurity training.
+Built as part of the DoD Cybersecurity Workforce Development Program at Virginia Tech's Senior Military College Cyber Institute. Labs ran on the Virginia Cyber Range: a sandboxed cloud environment used by Virginia universities for cybersecurity training.
 
-The approach was purple team: I ran attacks using Metasploit, Nmap, and arpspoof against my own listeners, then verified what was captured by cross-referencing listener output against Wireshark and tcpdump packet captures. Each of the five listeners maps to a dedicated lab focused on a different protocol and attack class.
+The approach was purple team: I ran attacks using Metasploit, Nmap, and arpspoof against my own listeners, then verified what was captured by cross-checking listener output against Wireshark and tcpdump packet captures. Each of the five listeners maps to a dedicated lab focused on a different protocol and attack class.
 
 ## License
 
