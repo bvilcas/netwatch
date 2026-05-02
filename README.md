@@ -1,5 +1,7 @@
 # NetWatch — Network Traffic Analysis Toolkit
 
+[![Demo](https://asciinema.org/a/tZuVPcPt7KkD7cZo.svg)](https://asciinema.org/a/tZuVPcPt7KkD7cZo)
+
 Python-based network listeners for capturing, logging, and analyzing incoming traffic. Built during the **DoD Cybersecurity Workforce Development Program** at Virginia Tech's Senior Military College Cyber Institute (SMCCI).
 
 ## Overview
@@ -51,7 +53,7 @@ NetWatch is a defensive monitoring toolkit that deploys listeners across multipl
 | HTTP | Flask (TCP) | 8080 | Web recon, scanning, exploit attempts |
 | TCP | Raw socket | 9001 | Port scans, Metasploit payloads, banner grabs |
 | UDP | Raw socket | 9002 | UDP scans, crafted datagrams |
-| DNS | UDP parser | 53 | DNS enumeration, zone transfers, tunneling |
+| DNS | UDP parser | 5300 | DNS enumeration, zone transfers, tunneling |
 | ARP | /proc/net/arp | — | ARP spoofing, cache poisoning, MITM |
 
 ## Quick Start
@@ -79,11 +81,18 @@ cp .env.example .env
 ### Usage
 
 ```bash
+# Start everything at once
+chmod +x start.sh && ./start.sh
+```
+
+Or run individually:
+
+```bash
 # Run individual listeners
 python netwatch.py http                  # HTTP on port 8080
 python netwatch.py tcp --port 666        # TCP on custom port
 python netwatch.py udp                   # UDP on port 9002
-sudo python netwatch.py dns              # DNS on port 53 (needs root)
+python netwatch.py dns                   # DNS on port 5353
 python netwatch.py arp --interval 3      # ARP monitor, 3s polling
 
 # Run all listeners at once
@@ -106,8 +115,8 @@ curl -X POST http://<listener-ip>:8080/login -d "user=admin&pass=test"
 echo "HELLO" | nc <listener-ip> 9001
 
 # DNS enumeration
-dig @<listener-ip> example.com ANY
-dig @<listener-ip> example.com AXFR
+dig @<listener-ip> -p 5300 +notcp example.com A
+dig @<listener-ip> -p 5300 +notcp example.com AXFR
 ```
 
 ## Analyzing Captured Data
@@ -148,7 +157,7 @@ ORDER BY queries DESC;
 | TCP listener (9001) | ✅ | ✅ |
 | UDP listener (9002) | ✅ | ✅ |
 | ARP monitor | ✅ | ✅ |
-| DNS listener (port 53) | ❌ | ✅ |
+| DNS listener (port 5353) | ✅ | ✅ |
 
 ## Exporting Captured Data
 

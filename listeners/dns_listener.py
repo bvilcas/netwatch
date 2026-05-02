@@ -66,7 +66,7 @@ def parse_dns_query(data):
         return None, None
 
 
-def start(host="0.0.0.0", port=53):
+def start(host="0.0.0.0", port=5300):
     """Start the DNS listener."""
     get_db().connect()
     print_banner("DNS Listener", host, port)

@@ -34,7 +34,7 @@ def run_udp(args):
 
 def run_dns(args):
     from listeners.dns_listener import start
-    start(host=args.host, port=args.port or 53)
+    start(host=args.host, port=args.port or 5300)
 
 
 def run_arp(args):
